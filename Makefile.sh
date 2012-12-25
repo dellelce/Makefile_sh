@@ -350,6 +350,11 @@ include()
            [ -f "${DEFSHOME}/defs/${File}" ] && File="${DEFSHOME}/defs/${File}"
          }
 
+       [ ! -f "${File}" ] &&
+         {
+           [ -f "${DEFSHOME}/${File}" ] && File="${DEFSHOME}/${File}"
+         }
+
        [ -f "$File" ] &&
          {
            process_newdefs $File > $Temp
