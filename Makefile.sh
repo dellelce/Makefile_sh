@@ -125,7 +125,7 @@ WECHO()
 
 process_newdefs()
 {
- typeset NewDefsFile=$1
+ typeset NewDefsFile="$1"
 
  DECHO "process_newdefs: $NewDefsFile"
 
@@ -137,14 +137,14 @@ process_newdefs()
 
  [ ! -s "${NewDefsFile}" ] &&
   {
-    echo "${NewDefsFile} is not a file."
+    echo "process_newdefs: \"${NewDefsFile}\" is not a file."
     return 1
   }
 
 #  1529 190812 moved awk code to an external file
 
- $AWK $MYPATH/process_newdefs.awk $NewDefsFile    
-
+ DECHO "process_newdefs: Running awk for: $NewDefsFile"
+ $AWK -f "$MYPATH/process_newdefs.awk" "$NewDefsFile"
 }
 
 
@@ -355,16 +355,22 @@ include()
            [ -f "${DEFSHOME}/${File}" ] && File="${DEFSHOME}/${File}"
          }
 
-       [ -f "$File" ] &&
+       typeset frc=0 # shell bug(?) workaround "||" was ignored 
+
+       [ -f "$File" ] && frc="1"
+
+       [ "$frc" -eq 1 ] &&
          {
            process_newdefs $File > $Temp
            [ $? -eq 0 ] && . $Temp 2> /dev/null
            RetCode=$? 
            [ -z "${NO_DEFS_RM}" ] && rm -f $Temp 
            [ ! -z "${NO_DEFS_RM}" ] && DECHO "not deleted temp file: $Temp"
-         } ||
+         }
+
+       [ "$frc" -eq 0 ] &&
          {
-           echo "$File is not a file. Skipped."; RetCode=1; break
+           echo "include: \"$File\" is not a file. Skipped."; RetCode=1; break
          }
      done
    }
@@ -899,7 +905,7 @@ perform_sanity_checks()
 
 [ -z "$TMP" -o ! -d "$TMP" ] && TMP="/tmp"
 MK_DEST="${TMP}/Makefile.$$.$RANDOM"
-MK_SRC="Makefilea"
+MK_SRC="Makefile"
 PROJECT_FILE="$PWD/project.defs"
 
 [ ! -f "${PROJECT_FILE}" ] && PROJECT_FILE="$PWD/defs/project.defs"
