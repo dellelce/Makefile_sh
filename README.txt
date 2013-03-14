@@ -17,7 +17,7 @@ OPTIONS
      -d            Create a Makefile with debug options set (-DDEBUG)
      -R            Remove all pre-existing Makefiles
      -q            Operate 'silently' (as possible)
-     -X            Run $(basename ${THISSCRIPT}) in debug mode.
+     -X            Run Makefile.sh in debug mode.
      -K            Do a "make clean" before re-creating makefile
      -x            Print some useful DEBUG information
      -B string     Prints a very large "string"
