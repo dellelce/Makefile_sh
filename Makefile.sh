@@ -32,6 +32,7 @@
 
  export ARGS="$*"
  export XECHO_PROG="cecho.sh"
+ export MYSELF="Antonio Dell'elce"
 
 # SunOS kludge (Standard 'awk' for SunOS is TOO OLD!)
 
@@ -474,7 +475,6 @@ mk_heading ()
  DECHO "mk_heading"
 
  typeset THIS_YEAR=$(date +%Y)
- typeset MYSELF="Antonio Dell'elce"
  typeset INCL_OPTION=""
  typeset Item
 
