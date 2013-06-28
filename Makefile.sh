@@ -51,11 +51,11 @@
  unset DEBUG_MAKEFILE
  unset DEBUG
  unset SUBPROJECTS
- unset LIBS
+# unset LIBS
  unset INCLUDES
- unset MODULES_LIBS
- unset MODULES_LIBDIR
- unset MODULES_INCLUDES
+# unset MODULES_LIBS
+# unset MODULES_LIBDIR
+# unset MODULES_INCLUDES
  unset RULES
  unset DEFSDIR
  unset CFILES
@@ -912,7 +912,7 @@ PROJECT_FILE="$PWD/project.defs"
 
 PROJECT_TEMP="${TMP}/project.defs.$$.$RANDOM"
 PLATFORM_FILE="$PWD/$(uname -o 2> /dev/null).defs"
-PROJECT="TestLang"
+[ -z "$PROJECT" ] && PROJECT="TestLang"
 TARGET="testlang"
 
 #
