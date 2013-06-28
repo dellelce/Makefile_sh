@@ -937,7 +937,7 @@ DECHO "Loading Main project file"
     [ -d "./src" ] && SRC_DIR=./src
     [ -d "./obj" ] && OBJ_DIR=./obj
 
-    dn="$(dirname $PWD)"
+    dn="$(basename $(dirname $PWD))"
 
     PROJECT="$dn"
     TARGET="$dn"
