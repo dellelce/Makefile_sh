@@ -884,6 +884,7 @@ get_target ()
  [ $? -eq 0 ] &&
    {
       . $TargetDefs
+      [ ! -z "$ForcedTarget" ] && TARGET="$ForcedTarget"
       echo ${DIR}${TARGET}
    } ||
    {
@@ -905,7 +906,7 @@ perform_sanity_checks()
 
  [ -z "${TARGET}" ] && 
    {
-     echo "Target is null, possibly you have an invalid project file"
+     echo "Target is null, you might have an invalid project file"
      exit 1
    }
 }
