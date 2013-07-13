@@ -958,7 +958,7 @@ DECHO "Loading Main project file"
     dn="$(basename $(dirname $PWD))"
 
     PROJECT="$dn"
-    [ -z "$ForcedTarget" ] && { TARGET="$dn"; } || { TARGET="$ForcedTarge"; } 
+    [ -z "$ForcedTarget" ] && { TARGET="$dn"; } || { TARGET="$ForcedTarget"; } 
   }
 
 #
