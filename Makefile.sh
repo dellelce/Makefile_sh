@@ -12,7 +12,9 @@
 
  [ -z "${DEFSHOME}" ] &&
    {
-     echo "DEFSHOME is not set!"; exit 1
+     #behaviour change; use current directory as DEFSHOME, previously it woull complain
+     # changed on 2333 130713
+     export DEFSHOME="$PWD"
    }
 
 ## Sanity check - Added 2331 071109
@@ -205,7 +207,7 @@ cleanup_func()
      [ "$1" = "-B" ] &&
        { 
          shift 
-         [ -z "${1}" ] &&
+         [ -z "$1" ] &&
            {
              echo "Banner option (-B) needs an argument."
              continue
@@ -216,6 +218,19 @@ cleanup_func()
              banner "${BANNER_STRING}"
              shift; continue
            }
+       }
+
+     [ "$1" = "-t" ] &&
+     {
+       shift
+       [ -z "$1" ] &&
+       {
+         echo "Target option (-t) needs an argument."
+         continue
+       } ||
+       {
+         ForcedTarget="$1" # not exported: we won't force target on subprojects
+         shift; continue
        }
 
      [ "$1" = "-x" ] &&
@@ -265,6 +280,7 @@ ${THISSCRIPT} [options]
 
  Where options:
  
+     -t            Force target 
      -d            Create a Makefile with debug options set (-DDEBUG)
      -R            Remove all pre-existing Makefiles
      -q            Operate 'silently' (as possible)
@@ -912,8 +928,8 @@ PROJECT_FILE="$PWD/project.defs"
 
 PROJECT_TEMP="${TMP}/project.defs.$$.$RANDOM"
 PLATFORM_FILE="$PWD/$(uname -o 2> /dev/null).defs"
-[ -z "$PROJECT" ] && PROJECT="TestLang"
-TARGET="testlang"
+[ -z "$PROJECT" ] && PROJECT="project"
+TARGET="target"
 
 #
 #
@@ -940,7 +956,7 @@ DECHO "Loading Main project file"
     dn="$(basename $(dirname $PWD))"
 
     PROJECT="$dn"
-    TARGET="$dn"
+    [ -z "$ForcedTarget" ] && { TARGET="$dn"; } || { TARGET="$ForcedTarge"; } 
   }
 
 #
