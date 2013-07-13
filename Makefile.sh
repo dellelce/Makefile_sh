@@ -232,6 +232,7 @@ cleanup_func()
          ForcedTarget="$1" # not exported: we won't force target on subprojects
          shift; continue
        }
+     }
 
      [ "$1" = "-x" ] &&
        {
