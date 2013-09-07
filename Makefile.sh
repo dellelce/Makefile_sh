@@ -401,7 +401,7 @@ include()
 #
 # Find all #include's in a C file. 
 #
-# WARNING: does not handle well commented "#include"
+# WARNING: does not handle well-commented "#include"
 #
 
 find_includes()
@@ -445,7 +445,7 @@ $1 ~ /^#include/ {
 
    [ "${CkCnt}" -eq 0 ] && 
      {
-       WECHO "find_includes: path not found: Item = ${Item}: Include dirs: ${INCLUDES}"
+       WECHO "find_includes: path not found: Source file = $INFILE Item = ${Item}: Include dirs: ${INCLUDES}"
      }
  done 
 
