@@ -103,6 +103,35 @@ find_xecho()
 
   XECHO=$(find_xecho)
 
+#
+# usage
+#
+
+usage()
+{
+  cat << EOF
+${THISSCRIPT} [options]
+
+ Where options:
+ 
+     -t            Force target 
+     -d            Create a Makefile with debug options set (-DDEBUG)
+     -R            Remove all pre-existing Makefiles
+     -q            Operate 'silently' (as possible)
+     -X            Run $(basename ${THISSCRIPT}) in debug mode.
+     -K            Do a "make clean" before re-creating makefile
+     -x            Print some useful DEBUG information
+     -B string     Prints a very large "string"
+     -defs         Sets directory to be used as container for .defs
+     -redo         Runs "make redo" at the end.
+     -D            Acts in the background (daemon)
+     -np
+     -newproject   Create an "empty" project.defs
+
+EOF
+
+}
+
   ############# DECHO #############
 
 #
@@ -164,7 +193,13 @@ cleanup_func()
   exit 1
 }
 
+#
+#
+
+setup_sighandlers()
+{
   trap "cleanup_func" INT
+}
 
 
   ############# process options #############
@@ -275,28 +310,8 @@ cleanup_func()
 
      [ "$1" = "-help" -o "$1" = "--help" ] &&
        {
-# 2138 210312 doubts on usefulness of '-B' option
-         cat << EOF
-${THISSCRIPT} [options]
-
- Where options:
- 
-     -t            Force target 
-     -d            Create a Makefile with debug options set (-DDEBUG)
-     -R            Remove all pre-existing Makefiles
-     -q            Operate 'silently' (as possible)
-     -X            Run $(basename ${THISSCRIPT}) in debug mode.
-     -K            Do a "make clean" before re-creating makefile
-     -x            Print some useful DEBUG information
-     -B string     Prints a very large "string"
-     -defs         Sets directory to be used as container for .defs
-     -redo         Runs "make redo" at the end.
-     -D            Acts in the background (daemon)
-     -np
-     -newproject   Create an "empty" project.defs
-
-EOF
-         exit 1
+         usage
+         exit 0
        }
 #
 # This should be used only internally
@@ -920,6 +935,8 @@ perform_sanity_checks()
 
 
 ########### -- Environment -- ########### 
+
+setup_sighandler
 
 [ -z "$TMP" -o ! -d "$TMP" ] && TMP="/tmp"
 MK_DEST="${TMP}/Makefile.$$.$RANDOM"
