@@ -196,7 +196,7 @@ cleanup_func()
 #
 #
 
-setup_sighandlers()
+setup_sighandler()
 {
   trap "cleanup_func" INT
 }
