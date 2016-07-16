@@ -5,6 +5,12 @@ DESCRIPTION
 	No support for creating platform configuration file or testing compiler features 
 	just plain Makefile creation.
 
+TODO
+
+        Bring up-to-date to my current (better) style
+        Better handling of "#include"
+        Determine if a python version would be useful
+
 AUTHOR
 	Antonio Dell'Elce
 
