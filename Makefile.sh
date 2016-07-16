@@ -8,30 +8,27 @@
 # ## Change Log will be here -- until now (1743 190812) updates comments are all 
 #
 
-## ENVIRONMENT & CONFIGURATION ##
+### ENVIRONMENT ###
 
- [ -z "${DEFSHOME}" ] &&
-   {
-     #behaviour change; use current directory as DEFSHOME, previously it woull complain
-     # changed on 2333 130713
-     export DEFSHOME="$PWD"
-   }
+[ -z "${DEFSHOME}" ] &&
+{
+ #behaviour change; use current directory as DEFSHOME, previously it woull complain
+ # changed on 2333 130713
+ export DEFSHOME="$PWD"
+}
 
 ## Sanity check - Added 2331 071109
 
- [ ! -d "${DEFSHOME}" ] &&
-   {
-     echo "DEFSHOME is not a valid directory!"
-     exit 1
-   }
+[ ! -d "${DEFSHOME}" ] &&
+ {
+  echo "DEFSHOME is not a valid directory!"
+  exit 1
+ }
 
  # 1607 190812 added MYPATH
  export MYPATH="$(dirname $(readlink  -f "$0"))"
-
  export THISSCRIPT="$MYPATH/Makefile.sh"
-
  export RUNLOG="$HOME/.lmk"
-
  export ARGS="$*"
  export XECHO_PROG="cecho.sh"
  export MYSELF="Antonio Dell'elce"
@@ -47,7 +44,7 @@
      [ ! -x "$AWK" ] && AWK="awk" # fallback to hell 2308 040910
    }
 
-# Clear possible trash
+# Clear possible trash (from previous executions - Makefile.sh can call itself)
 
  CHILD_RUN=0
  RUN_MAKE_REDO=0
@@ -75,15 +72,14 @@
 CompilerName="gcc"
 [ -z "${CompilerFlags}" ] && CompilerFlags="-Wall -O2"
     
-  ############# execution log #############
-
+############# execution log #############
 
  # 1606 190812 test if RUNLOG actually exists before writing log entry (should use a flag?)
  [ -f "$RUNLOG" ] && echo "$(pwd),$(date), $ARGS" >> $RUNLOG
 
-  ############# locate color echo version #############
+ ############# locate color echo version #############
 
-## FUNCTIONS ##
+### FUNCTIONS ###
 
  unset XECHO
 
@@ -179,7 +175,6 @@ process_newdefs()
  $AWK -f "$MYPATH/process_newdefs.awk" "$NewDefsFile"
 }
 
-
   ############# cleanup_func #############
 
 # Enable clean handling of Control-C key 
@@ -193,16 +188,12 @@ cleanup_func()
   exit 1
 }
 
-#
-#
-
 setup_sighandler()
 {
   trap "cleanup_func" INT
 }
 
-
-  ############# process options #############
+############# process options #############
 
  SavedArgs=""
 
@@ -594,7 +585,7 @@ LIBS           = ${LIBS}
 
 EOF
 
-#### End of mk_heading ####
+ #### End of mk_heading ####
 }
 
   ############# mk_subrules #############
@@ -632,9 +623,7 @@ EOF
 
 }
 
-
-  ############# mk_heading_rules #############
-
+############# mk_heading_rules #############
 
 mk_heading_rules()
 {
@@ -668,8 +657,7 @@ EOF
   }
 }
 
-
-  ############# get_custom_rules_targets #############
+############# get_custom_rules_targets #############
 
 get_custom_rules_targets ()
 {
@@ -689,8 +677,7 @@ get_custom_rules_targets ()
  echo "$AllRules"
 }
 
-  ############# mk_custom_rules #############
-
+############# mk_custom_rules #############
 
 mk_custom_rules ()
 {
@@ -1139,8 +1126,6 @@ unset IN
      [ ! -z "${ALL_TARGETS}" ] && { echo "Sub Targets are ${ALL_TARGETS}"; }
    }
 
-
-
 #
 # Runs Pre-exec scripts
 #
@@ -1243,7 +1228,5 @@ rm -f $MK_DEST
       RUN_MAKE_REDO="0"
    }
  
- 
 
-############# End of File #############
-
+### EOF ###
