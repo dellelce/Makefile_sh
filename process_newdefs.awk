@@ -1,7 +1,7 @@
 #
 # process_newdefs.awk
 #
-# Create: sometime in 2008 (or maybe even earlier)!
+# Created: sometime in 2008 (or maybe even earlier)!
 #
 # Process configuration file to be used by Makefile.sh
 #
@@ -13,8 +13,8 @@
 # State		Description
 #--------------+-----------------------------------------------
 # 0            | Default/Home
-# 1            | ..........
-# 2            | ..........
+# 1            | Processing a rule (waiting for beginning curly bracket)
+# 2            | Processing a rule
 #
 
 BEGIN \
