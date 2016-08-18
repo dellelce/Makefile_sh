@@ -1,9 +1,9 @@
 DESCRIPTION
 
-	A small script to automate Makefile creation.
+	A small script to automate Makefile generation.
 	The idea comes after "GNU Configure" but much more lightweight and easier to use.
 	No support for creating platform configuration file or testing compiler features 
-	just plain Makefile creation.
+	just plain Makefile generation.
 
 TODO
 
@@ -33,3 +33,4 @@ OPTIONS
      -np
      -newproject   Create an "empty" project.defs
 
+### EOF ###
