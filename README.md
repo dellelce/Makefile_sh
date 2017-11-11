@@ -1,24 +1,24 @@
-DESCRIPTION
+## DESCRIPTION
 
 	A small script to automate Makefile generation.
 	The idea comes after "GNU Configure" but much more lightweight and easier to use.
 	No support for creating platform configuration file or testing compiler features 
 	just plain Makefile generation.
 
-TODO
+## TODO
 
         Bring up-to-date to my current (better) style
         Better handling of "#include"
         Determine if a python version would be useful
 
-AUTHOR
+## AUTHOR
 	Antonio Dell'Elce
 
-COPYRIGHT
+## COPYRIGHT
 
 	TBD - Possibly BSD
 
-OPTIONS
+## OPTIONS
         
      -d            Create a Makefile with debug options set (-DDEBUG)
      -R            Remove all pre-existing Makefiles
@@ -33,4 +33,4 @@ OPTIONS
      -np
      -newproject   Create an "empty" project.defs
 
-### EOF ###
+[//]: ### EOF ###
