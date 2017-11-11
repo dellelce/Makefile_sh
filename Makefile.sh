@@ -102,7 +102,6 @@ find_xecho()
 #
 # usage
 #
-
 usage()
 {
   cat << EOF
@@ -136,8 +135,8 @@ EOF
 
 DECHO()
 {
-  typeset ESC=""
-  [ ! -z "${DEBUG}" ] &&  eval "echo ${ESC}[1mDEBUG${ESC}[0m $(date +%H%M): \"$*\"   1>&$DEBUG_FD";
+ typeset ESC=""
+ [ ! -z "${DEBUG}" ] &&  eval "echo ${ESC}[1mDEBUG${ESC}[0m $(date +%H%M): \"$*\"   1>&$DEBUG_FD";
 }
 
 WECHO()
@@ -1169,29 +1168,29 @@ unset IN
  DECHO "Verifying if new Makefile has any change."
 
  [ -f "$MK_SRC" ] &&
+ {
+  CNT=$(diff -c $MK_SRC $MK_DEST | wc -l)
+
+  [ "$CNT" -eq "0" ] &&
   {
-    CNT=$(diff -c $MK_SRC $MK_DEST | wc -l)
-
-    [ "$CNT" -eq "0" ] &&
-     {
-      echo "There are no differences in the new and old makefile!!"
-     } ||
-     {
-      cp $MK_DEST $MK_SRC
-
-      echo
-      echo "Makefile updated:"
-      [ -f "${MK_SRC}" ] && 
-        {
-          ls -lt ${MK_SRC}
-        }
-     }
+   echo "There are no differences in the new and old makefile!!"
   } ||
   {
-    cp $MK_DEST $MK_SRC
-    echo "New Makefile:"
-    ls -lt $MK_SRC
+   cp $MK_DEST $MK_SRC
+
+   echo
+   echo "Makefile updated:"
+   [ -f "${MK_SRC}" ] && 
+   {
+     ls -lt ${MK_SRC}
+   }
   }
+ } ||
+ {
+  cp $MK_DEST $MK_SRC
+  echo "New Makefile:"
+  ls -lt $MK_SRC
+ }
 
 #
 # Runs Post exec scripts
@@ -1200,16 +1199,16 @@ unset IN
  DECHO "Verifying if we need to run any post execution script."
 
  [ -x "$POST_EXEC" ] &&
-   {
-     echo "Running POST_EXEC..."
-     $SHELL $PWD/$POST_EXEC
+ {
+  echo "Running POST_EXEC..."
+  $SHELL $PWD/$POST_EXEC
 
-     [ "$?" -eq "1" ] &&
-       {
-         echo "Post-exec script failed!! Exiting...."
-         exit 1
-       }
-   }
+  [ "$?" -eq "1" ] &&
+  {
+   echo "Post-exec script failed!! Exiting...."
+   exit 1
+  }
+ }
 
 ######## -- Clean up -- ########
 
@@ -1219,14 +1218,14 @@ rm -f $MK_DEST
 # Verify if we have been asked to run "make redo"
 #
 
- DECHO "Verifying if we have been asked to run \"make redo\""
+DECHO "Verifying if we have been asked to run \"make redo\""
 
- [ "${CHILD_RUN}" -ne 1 -a "${RUN_MAKE_REDO}" -eq 1 ] &&
-   {
-      DECHO "Running make redo..."
-      make redo
-      RUN_MAKE_REDO="0"
-   }
+[ "${CHILD_RUN}" -ne 1 -a "${RUN_MAKE_REDO}" -eq 1 ] &&
+ {
+  DECHO "Running make redo..."
+  make redo
+  RUN_MAKE_REDO="0"
+ }
  
 
 ### EOF ###
