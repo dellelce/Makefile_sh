@@ -1,11 +1,9 @@
 #!/bin/bash
 #
-#
 # Builds Makefile "automatically"
 #
 # (c) Antonio Dell'elce
 #
-# ## Change Log will be here -- until now (1743 190812) updates comments are all 
 #
 
 ### ENVIRONMENT ###
@@ -922,19 +920,19 @@ perform_sanity_checks()
 
 ########### -- Environment -- ########### 
 
-setup_sighandler
+ setup_sighandler
 
-[ -z "$TMP" -o ! -d "$TMP" ] && TMP="/tmp"
-MK_DEST="${TMP}/Makefile.$$.$RANDOM"
-MK_SRC="Makefile"
-PROJECT_FILE="$PWD/project.defs"
-
-[ ! -f "${PROJECT_FILE}" ] && PROJECT_FILE="$PWD/defs/project.defs"
-
-PROJECT_TEMP="${TMP}/project.defs.$$.$RANDOM"
-PLATFORM_FILE="$PWD/$(uname -o 2> /dev/null).defs"
-[ -z "$PROJECT" ] && PROJECT="project"
-TARGET="target"
+ [ -z "$TMP" -o ! -d "$TMP" ] && TMP="/tmp"
+ MK_DEST="${TMP}/Makefile.$$.$RANDOM"
+ MK_SRC="Makefile"
+ PROJECT_FILE="$PWD/project.defs"
+ 
+ [ ! -f "${PROJECT_FILE}" ] && PROJECT_FILE="$PWD/defs/project.defs"
+ 
+ PROJECT_TEMP="${TMP}/project.defs.$$.$RANDOM"
+ PLATFORM_FILE="$PWD/$(uname -o 2> /dev/null).defs"
+ [ -z "$PROJECT" ] && PROJECT="project"
+ TARGET="target"
 
 #
 #
@@ -942,33 +940,33 @@ TARGET="target"
 #
 #
 
-DECHO "Loading Main project file"
-
-[ -f "$PROJECT_FILE" ] &&
-  {
-    process_newdefs $PROJECT_FILE > ${PROJECT_TEMP}
-    [ $? -eq 0 ] && . ${PROJECT_TEMP}
-    rm -f ${PROJECT_TEMP}
-  } ||
-  {
-    echo 
-    echo "project.defs was not found... using internal defaults"
-    echo 
-
-    [ -d "./src" ] && SRC_DIR=./src
-    [ -d "./obj" ] && OBJ_DIR=./obj
-
-    dn="$(basename $(dirname $PWD))"
-
-    PROJECT="$dn"
-    [ -z "$ForcedTarget" ] && { TARGET="$dn"; } || { TARGET="$ForcedTarget"; } 
-  }
-
+ DECHO "Loading Main project file"
+ 
+ [ -f "$PROJECT_FILE" ] &&
+ {
+  process_newdefs $PROJECT_FILE > ${PROJECT_TEMP}
+  [ $? -eq 0 ] && . ${PROJECT_TEMP}
+  rm -f ${PROJECT_TEMP}
+ } ||
+ {
+  echo 
+  echo "project.defs was not found... using internal defaults"
+  echo 
+ 
+  [ -d "./src" ] && SRC_DIR=./src
+  [ -d "./obj" ] && OBJ_DIR=./obj
+ 
+  dn="$(basename $(dirname $PWD))"
+ 
+  PROJECT="$dn"
+  [ -z "$ForcedTarget" ] && { TARGET="$dn"; } || { TARGET="$ForcedTarget"; } 
+ }
+ 
 #
 # Minimal sanity checks
 #
 
-perform_sanity_checks
+ perform_sanity_checks
 
 #
 #
@@ -976,10 +974,10 @@ perform_sanity_checks
 #
 #
 
-[ -f "$PLATFORM_FILE" ] &&
-  {
-    . $PLATFORM_FILE
-  }
+ [ -f "$PLATFORM_FILE" ] &&
+ {
+  . $PLATFORM_FILE
+ }
 
 #
 #
@@ -987,12 +985,12 @@ perform_sanity_checks
 #
 #
  [ ! -z "$LOAD_FILES" ] &&
-   {
-     for Item in $LOAD_FILES
-       do
-         [ -f "$Item" ] && . $Item
-       done
-   }
+ {
+  for Item in $LOAD_FILES
+  do
+   [ -f "$Item" ] && . $Item
+  done
+ }
 
 #
 #
@@ -1000,23 +998,23 @@ perform_sanity_checks
 #
 #
 
-[ -d "${OBJ_DIR}" ] && 
-  {
-    OBJ_DIR="${OBJ_DIR}/"
-  } ||
-  {
-    # Make sure there is no trash in that variable.
-    OBJ_DIR=""
-  }
-
-[ -d "${SRC_DIR}" ] && 
-  {
-    SRC_DIR="${SRC_DIR}/"
-  } ||
-  {
-    # Make sure there is no trash in that variable.
-    SRC_DIR=""
-  }
+ [ -d "${OBJ_DIR}" ] && 
+ {
+  OBJ_DIR="${OBJ_DIR}/"
+ } ||
+ {
+  # Make sure there is no trash in that variable.
+  OBJ_DIR=""
+ }
+ 
+ [ -d "${SRC_DIR}" ] && 
+ {
+  SRC_DIR="${SRC_DIR}/"
+ } ||
+ {
+  # Make sure there is no trash in that variable.
+  SRC_DIR=""
+ }
 
 #
 #  Builds list of .c files and related Object files (.o)
@@ -1054,9 +1052,9 @@ unset IN
 #
 
  [ ! "$FLAG_SILENT" = 1 ] &&
-   {
-     echo "$THISSCRIPT running in $PWD..."
-   }
+ {
+  echo "$THISSCRIPT running in $PWD..."
+ }
 
 #
 # Remove all files...
@@ -1065,12 +1063,12 @@ unset IN
  DECHO "Checking if needed to remove current makefiles"
 
  [ "${CHILD_RUN}" -eq 0 -a "${REMOVE_ALL}" = "1" ] &&
-   {
-     DECHO " - Removing Makefiles..."
-     remove_makefiles
+ {
+  DECHO " - Removing Makefiles..."
+  remove_makefiles
 
-     echo
-   }
+  echo
+ }
 
 #
 # Retrieve Sub-project name
@@ -1081,48 +1079,48 @@ unset IN
  DECHO "Verifying if we need to load subprojects"
 
  [ ! -z "$SUBPROJECTS" ] &&
+ {
+  for IN in $SUBPROJECTS
+  do
+   DECHO "Processing subproject: ${IN}"
+
+   [ ! -z "${FLAG_CLEANALL}" -a -f "$PWD/$IN/Makefile" ] &&
    {
-     for IN in $SUBPROJECTS
-       do
-         DECHO "Processing subproject: ${IN}"
+    make -C $PWD/$IN clean
+   }
 
-         [ ! -z "${FLAG_CLEANALL}" -a -f "$PWD/$IN/Makefile" ] &&
-           {
-             make -C $PWD/$IN clean
-           }
+   [ -f "$PWD/$IN/project.defs" -o -f "${PWD}/${IN}/defs/project.defs"  ] &&
+   {
+    # Execute Makefile.sh in each subproject  directory
+    DECHO "Found subproject dir: ${PWD}/${IN}"
+    ALL_TARGETS=" ${ALL_TARGETS} $(get_target $PWD/$IN/project.defs ) "
 
-         [ -f "$PWD/$IN/project.defs" -o -f "${PWD}/${IN}/defs/project.defs"  ] &&
-           {
-             # Execute Makefile.sh in each subproject  directory
-             DECHO "Found subproject dir: ${PWD}/${IN}"
-             ALL_TARGETS=" ${ALL_TARGETS} $(get_target $PWD/$IN/project.defs ) "
+    DECHO "All Targets: ${ALL_TARGETS}"
 
-             DECHO "All Targets: ${ALL_TARGETS}"
+    (
+     echo
+     echo "Sub-project: $IN"
+     cd $PWD/$IN
+#    [ -z "${DEFSDIR}" ] && 
+#    {
+#     DECHO "Running $THISSCRIPT -C -q ${ARGS}"
+#     $THISSCRIPT -C -q ${ARGS}
+#    } ||
+#    {
+#     DECHO "Running $THISSCRIPT -C -q ${ARGS} -defs ${DEFSDIR}"
+#     $THISSCRIPT -C -q ${ARGS} -defs "${DEFSDIR}"
+#    }
 
-             (
-               echo
-               echo "Sub-project: $IN"
-               cd $PWD/$IN
-#               [ -z "${DEFSDIR}" ] && 
-#                 {
-#                   DECHO "Running $THISSCRIPT -C -q ${ARGS}"
-#                   $THISSCRIPT -C -q ${ARGS}
-#                 } ||
-#                 {
-#                   DECHO "Running $THISSCRIPT -C -q ${ARGS} -defs ${DEFSDIR}"
-#                   $THISSCRIPT -C -q ${ARGS} -defs "${DEFSDIR}"
-#                 }
+     DECHO "Running $THISSCRIPT -C -q ${SavedArgs}"
+     $THISSCRIPT -C -q ${SavedArgs}
 
-               DECHO "Running $THISSCRIPT -C -q ${SavedArgs}"
-               $THISSCRIPT -C -q ${SavedArgs}
+     echo "Completed: $IN"
+     echo
+    )
+   }
+  done
 
-               echo "Completed: $IN"
-               echo
-             )
-           }
-       done
-
-     [ ! -z "${ALL_TARGETS}" ] && { echo "Sub Targets are ${ALL_TARGETS}"; }
+    [ ! -z "${ALL_TARGETS}" ] && { echo "Sub Targets are ${ALL_TARGETS}"; }
    }
 
 #
@@ -1131,17 +1129,17 @@ unset IN
  DECHO "Verifying if we need to run any pre execution script."
 
  [ -f "$PRE_EXEC" ] &&
-   {
-     echo "Running PRE_EXEC..."
-     echo
-     $SHELL $PWD/$PRE_EXEC
+ {
+  echo "Running PRE_EXEC..."
+  echo
+  $SHELL $PWD/$PRE_EXEC
 
-     [ "$?" -eq "1" ] &&
-       {
-         echo "Pre-exec script failed!! Exiting...."
-         exit 1
-       }
-   }
+  [ "$?" -eq "1" ] &&
+  {
+   echo "Pre-exec script failed!! Exiting...."
+   exit 1
+  }
+ }
 
 #
 #
@@ -1212,20 +1210,19 @@ unset IN
 
 ######## -- Clean up -- ########
 
-rm -f $MK_DEST
+ rm -f $MK_DEST
 
 #
 # Verify if we have been asked to run "make redo"
 #
 
-DECHO "Verifying if we have been asked to run \"make redo\""
+ DECHO "Verifying if we have been asked to run \"make redo\""
 
-[ "${CHILD_RUN}" -ne 1 -a "${RUN_MAKE_REDO}" -eq 1 ] &&
+ [ "${CHILD_RUN}" -ne 1 -a "${RUN_MAKE_REDO}" -eq 1 ] &&
  {
   DECHO "Running make redo..."
   make redo
   RUN_MAKE_REDO="0"
  }
- 
 
 ### EOF ###
