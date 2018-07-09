@@ -7,16 +7,16 @@
 
 ## TODO
 
-        Bring up-to-date to my current (better) style
-        Better handling of "#include"
-        Determine if a python version would be useful
+* Bring up-to-date to my current (better) style
+* Better handling of "#include"
+* Determine if a python version would be useful
 
 ## AUTHOR
 	Antonio Dell'Elce
 
-## COPYRIGHT
+## LICENSE
 
-	TBD - Possibly BSD
+	BSD
 
 ## OPTIONS
         
