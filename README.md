@@ -32,5 +32,3 @@
      -D            Acts in the background (daemon)
      -np
      -newproject   Create an "empty" project.defs
-
-[//]: ### EOF ###
