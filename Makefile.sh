@@ -335,9 +335,6 @@ EOF
 #
 # To be used in projects..
 #
-# 
-#
-
 include()
 {
  typeset RetCode=0
@@ -345,54 +342,54 @@ include()
 
  [ ! -z "$*" ] && 
    {
-     typeset Item File
-     typeset Temp="/tmp/include.$$.$RANDOM"
+    typeset Item File
+    typeset Temp="/tmp/include.$$.$RANDOM"
 
-     for File in $*
-     do
-       [ "${File}" = "${File%.defs}" ] &&
-         {
-           File="${File}.defs"
-         }
+    for File in $*
+    do
+      [ "${File}" = "${File%.defs}" ] &&
+      {
+        File="${File}.defs"
+      }
 
        [ ! -z "${DEFSDIR}" -a -d "${DEFSDIR}" ] &&
-         {
-           [ -f "${DEFSDIR}/${File}" ] && File="${DEFSDIR}/${File}"
-         }
+       {
+         [ -f "${DEFSDIR}/${File}" ] && File="${DEFSDIR}/${File}"
+       }
 
        [ -d "defs" ] &&
-         {
-           [ -z "${DEFSDIR}" ] && DEFSDIR="$PWD/defs"
-           [ -f "defs/${File}" ] && File="defs/${File}"
-         }
+       {
+         [ -z "${DEFSDIR}" ] && DEFSDIR="$PWD/defs"
+         [ -f "defs/${File}" ] && File="defs/${File}"
+       }
 
        [ ! -f "${File}" ] &&
-         {
-           [ -f "${DEFSHOME}/defs/${File}" ] && File="${DEFSHOME}/defs/${File}"
-         }
+       {
+         [ -f "${DEFSHOME}/defs/${File}" ] && File="${DEFSHOME}/defs/${File}"
+       }
 
        [ ! -f "${File}" ] &&
-         {
-           [ -f "${DEFSHOME}/${File}" ] && File="${DEFSHOME}/${File}"
-         }
+       {
+         [ -f "${DEFSHOME}/${File}" ] && File="${DEFSHOME}/${File}"
+       }
 
        typeset frc=0 # shell bug(?) workaround "||" was ignored 
 
        [ -f "$File" ] && frc="1"
 
        [ "$frc" -eq 1 ] &&
-         {
-           process_newdefs $File > $Temp
-           [ $? -eq 0 ] && . $Temp 2> /dev/null
-           RetCode=$? 
-           [ -z "${NO_DEFS_RM}" ] && rm -f $Temp 
-           [ ! -z "${NO_DEFS_RM}" ] && DECHO "not deleted temp file: $Temp"
-         }
+       {
+         process_newdefs $File > $Temp
+         [ $? -eq 0 ] && . $Temp 2> /dev/null
+         RetCode=$? 
+         [ -z "${NO_DEFS_RM}" ] && rm -f $Temp 
+         [ ! -z "${NO_DEFS_RM}" ] && DECHO "not deleted temp file: $Temp"
+       }
 
        [ "$frc" -eq 0 ] &&
-         {
-           echo "include: \"$File\" is not a file. Skipped."; RetCode=1; break
-         }
+       {
+         echo "include: \"$File\" is not a file. Skipped."; RetCode=1; break
+       }
      done
    }
 
@@ -406,7 +403,6 @@ include()
 #
 # WARNING: does not handle well-commented "#include"
 #
-
 find_includes()
 {
  DECHO "find_includes: $1"
@@ -466,30 +462,28 @@ mk_libs_var()
 
  [ ! -z "${MODULES_LIBDIR}" ] &&
   {
-    for DirItem in ${MODULES_LIBDIR}
-    do
-      [ -d "${DirItem}" ] &&
-        {
-          LIBS="${LIBS} -L${DirItem}"
-        }
-    done
+   for DirItem in ${MODULES_LIBDIR}
+   do
+    [ -d "${DirItem}" ] &&
+    {
+      LIBS="${LIBS} -L${DirItem}"
+    }
+   done
   }
 
  [ ! -z "${MODULES_LIBS}" ] &&
-  {
-    for LibItem in ${MODULES_LIBS}
-    do
-      LIBS="${LIBS} -l${LibItem}"
-    done
-  }
+ {
+  for LibItem in ${MODULES_LIBS}
+  do
+    LIBS="${LIBS} -l${LibItem}"
+  done
+ }
 
 }
   ############# mk_heading #############
 
 #
 # Builds a makefile "heading"
-
-
 mk_heading ()
 {
  DECHO "mk_heading"
@@ -689,18 +683,16 @@ mk_custom_rules ()
  typeset SingleRule SingleItem
 
  for SingleRule in $RULES
-  do
-    eval echo \$RULE_TARGET_${SingleRule}: \$RULE_INPUT_${SingleRule}
-    SingleItem=$(eval echo "	\$RULE_COMMANDS_${SingleRule}")
-    echo "	@echo RULE ${SingleRule}"
-    echo "	@${SingleItem}"
-    echo
-  done
+ do
+  eval echo \$RULE_TARGET_${SingleRule}: \$RULE_INPUT_${SingleRule}
+  SingleItem=$(eval echo "	\$RULE_COMMANDS_${SingleRule}")
+  echo "	@echo RULE ${SingleRule}"
+  echo "	@${SingleItem}"
+  echo
+ done
 }
 
-
   ############# mk_body #############
-
 
 mk_body()
 {
@@ -764,7 +756,6 @@ typeset _CFILES=$(
 
 done
 }
-
 
 ############# mk_clean #############
 
