@@ -16,7 +16,6 @@
 }
 
 ## Sanity check - Added 2331 071109
-
 [ ! -d "${DEFSHOME}" ] &&
  {
   echo "DEFSHOME is not a valid directory!"
@@ -32,6 +31,7 @@
  export MYSELF="Antonio Dell'elce"
 
 # SunOS kludge (Standard 'awk' for SunOS is TOO OLD!)
+# TODO: this was actually for (now) "legacy" version of Solaris
 
  [ $(uname) != "SunOS" ] &&
    {
@@ -58,9 +58,9 @@
  unset DEFSDIR
  unset CFILES
 
-# Duplicate stdout FD 
+# Duplicate stdout FD
 
- DEBUG_FD=5 
+ DEBUG_FD=5
  eval "exec $DEBUG_FD>&1"
 
 #
@@ -69,7 +69,7 @@
 
 CompilerName="gcc"
 [ -z "${CompilerFlags}" ] && CompilerFlags="-Wall -O2"
-    
+
 ############# execution log #############
 
  # 1606 190812 test if RUNLOG actually exists before writing log entry (should use a flag?)
@@ -86,13 +86,13 @@ find_xecho()
  typeset Item
  typeset FOUND=$(
 
-   IFS=":"
-   for Item in ${PATH}
-   do
-     [ -x "${Item}/${XECHO_PROG}" ] && echo "${Item}/${XECHO_PROG}"
-   done | uniq
+ IFS=":"
+ for Item in ${PATH}
+ do
+   [ -x "${Item}/${XECHO_PROG}" ] && echo "${Item}/${XECHO_PROG}"
+ done | uniq
 )
- echo $FOUND 
+ echo $FOUND
 }
 
   XECHO=$(find_xecho)
@@ -106,8 +106,8 @@ usage()
 ${THISSCRIPT} [options]
 
  Where options:
- 
-     -t            Force target 
+
+     -t            Force target
      -d            Create a Makefile with debug options set (-DDEBUG)
      -R            Remove all pre-existing Makefiles
      -q            Operate 'silently' (as possible)
@@ -130,7 +130,6 @@ EOF
 #
 # Debug echo function
 #
-
 DECHO()
 {
  typeset ESC=""
@@ -142,12 +141,11 @@ WECHO()
  typeset ESC=""
  eval "echo ${ESC}[1mWARNING${ESC}[0m $(date +%H%M): \"$*\"   1>&$DEBUG_FD";
 }
+
   ############# process_newdefs #############
 
-#
 # Convert new .defs format to a shell script.
 #
-
 process_newdefs()
 {
  typeset NewDefsFile="$1"
@@ -155,27 +153,25 @@ process_newdefs()
  DECHO "process_newdefs: $NewDefsFile"
 
  [ -z "${NewDefsFile}" ] &&
-  {
-    echo "process_newdefs: Use an argument"
-    return 1
-  }
+ {
+   echo "process_newdefs: Use an argument"
+   return 1
+ }
 
  [ ! -s "${NewDefsFile}" ] &&
-  {
-    echo "process_newdefs: \"${NewDefsFile}\" is not a file."
-    return 1
-  }
+ {
+   echo "process_newdefs: \"${NewDefsFile}\" is not a file."
+   return 1
+ }
 
 #  1529 190812 moved awk code to an external file
-
  DECHO "process_newdefs: Running awk for: $NewDefsFile"
  $AWK -f "$MYPATH/process_newdefs.awk" "$NewDefsFile"
 }
 
-  ############# cleanup_func #############
+############# cleanup_func #############
 
-# Enable clean handling of Control-C key 
-
+# Enable clean handling of Control-C key
 cleanup_func()
 {
   echo
@@ -194,130 +190,125 @@ setup_sighandler()
 
  SavedArgs=""
 
- while [ ! -z "$1" ] 
-  do
-    [ "$1" = "-d" ] &&
-      {
-         echo "${THISSCRIPT} will create a debug Makefile.."
-         export DEBUG_MAKEFILE=1
-         SavedArgs="${SavedArgs} -d"
-	 shift; continue
-      } 
+ while [ ! -z "$1" ]
+ do
+  [ "$1" = "-d" ] &&
+  {
+    echo "${THISSCRIPT} will create a debug Makefile.."
+    export DEBUG_MAKEFILE=1
+    SavedArgs="${SavedArgs} -d"
+    shift; continue
+  }
 
-    [ "$1" = "-R" ] &&
-      {
-         export REMOVE_ALL=1
-         SavedArgs="${SavedArgs} -R"
-	 shift; continue
-      } ||
-         unset REMOVE_ALL
+  [ "$1" = "-R" ] &&
+  {
+    export REMOVE_ALL=1
+    SavedArgs="${SavedArgs} -R"
+    shift; continue
+  } ||
+    unset REMOVE_ALL
 
-     [ "$1" = "-q" ] &&
-       {
-         export FLAG_SILENT=1 
-	 shift; continue
-       } ||
-         unset FLAG_SILENT
+  [ "$1" = "-q" ] &&
+  {
+    export FLAG_SILENT=1
+    shift; continue
+  } ||
+    unset FLAG_SILENT
 
-     [ "$1" = "-X" ] &&
-       {
-         SavedArgs="${SavedArgs} -X"
-         export SCRIPT_DEBUG=1 
-         set -x
-	 shift; continue
-       }
+  [ "$1" = "-X" ] &&
+  {
+    SavedArgs="${SavedArgs} -X"
+    export SCRIPT_DEBUG=1
+    set -x
+    shift; continue
+  }
 
-     [ "$1" = "-B" ] &&
-       { 
-         shift 
-         [ -z "$1" ] &&
-           {
-             echo "Banner option (-B) needs an argument."
-             continue
-           } ||
-           {
-             export FLAG_BANNER="1"
-             export BANNER_STRING="${1}"
-             banner "${BANNER_STRING}"
-             shift; continue
-           }
-       }
+  [ "$1" = "-B" ] &&
+  {
+    shift
+    [ -z "$1" ] &&
+    {
+      echo "Banner option (-B) needs an argument."
+      continue
+    } ||
+    {
+      export FLAG_BANNER="1"
+      export BANNER_STRING="${1}"
+      banner "${BANNER_STRING}"
+      shift; continue
+    }
+  }
 
-     [ "$1" = "-t" ] &&
-     {
-       shift
-       [ -z "$1" ] &&
-       {
-         echo "Target option (-t) needs an argument."
-         continue
-       } ||
-       {
-         ForcedTarget="$1" # not exported: we won't force target on subprojects
-         shift; continue
-       }
-     }
+  [ "$1" = "-t" ] &&
+  {
+    shift
+    [ -z "$1" ] &&
+    {
+      echo "Target option (-t) needs an argument."
+      continue
+    } ||
+    {
+      ForcedTarget="$1" # not exported: we won't force target on subprojects
+      shift; continue
+    }
+  }
 
-     [ "$1" = "-x" ] &&
-       {
-         SavedArgs="${SavedArgs} -x"
-         export DEBUG=1 
-	 shift; continue
-       }
+  [ "$1" = "-x" ] &&
+  {
+    SavedArgs="${SavedArgs} -x"
+    export DEBUG=1
+    shift; continue
+  }
 
-     [ "$1" = "-K" ] &&
-       {
-         SavedArgs="${SavedArgs} -K"
-         export FLAG_CLEANALL=1 
-	 shift; continue
-       }
+  [ "$1" = "-K" ] &&
+  {
+    SavedArgs="${SavedArgs} -K"
+    export FLAG_CLEANALL=1
+    shift; continue
+  }
 
-     [ "$1" = "-defs" ] &&
-       {
-         shift; export DEFSDIR="${1}"
-         SavedArgs="${SavedArgs} -defs ${DEFSDIR}"
-	 shift; continue
-       }
+  [ "$1" = "-defs" ] &&
+  {
+    shift; export DEFSDIR="${1}"
+    SavedArgs="${SavedArgs} -defs ${DEFSDIR}"
+    shift; continue
+  }
 
-     [ "$1" = "-newproject" -o "$1" = "-np" ] &&
-       {
-         export CREATE_NEW_PROJECT=1 
-	 shift; continue
-       }
+  [ "$1" = "-newproject" -o "$1" = "-np" ] &&
+  {
+    export CREATE_NEW_PROJECT=1; shift; continue
+  }
 
-     [ "$1" = "-redo" ] &&
-       {
-         export RUN_MAKE_REDO=1 
-	 shift; continue
-       }
+  [ "$1" = "-redo" ] &&
+  {
+    export RUN_MAKE_REDO=1; shift; continue
+  }
 
-     [ "$1" = "-D" ] &&
-       {
-         export RUN_AS_DAEMON=1 
-	 shift; continue
-       }
+  [ "$1" = "-D" ] &&
+  {
+    export RUN_AS_DAEMON=1; shift; continue
+  }
 
-     [ "$1" = "-help" -o "$1" = "--help" ] &&
-       {
-         usage
-         exit 0
-       }
+  [ "$1" = "-help" -o "$1" = "--help" ] &&
+  {
+    usage; exit 0
+  }
 #
 # This should be used only internally
 #
 
-    [ "$1" = "-C" ] &&
-      {
-        export CHILD_RUN=1; shift; continue
-      }
+  [ "$1" = "-C" ] &&
+  {
+    export CHILD_RUN=1; shift; continue
+  }
 
-    [ "${1}" != "${1#-}" ] &&
-      {
-        echo "unknown option: $1"; echo "try: Makefile.sh -help";
-        exit 1
-      }
+  [ "${1}" != "${1#-}" ] &&
+  {
+    echo "unknown option: $1"; echo "try: Makefile.sh -help"; exit 1
+  }
 
-    shift
-  done
+  shift
+ done
 
   ############# Start-up banner #############
 
@@ -340,7 +331,7 @@ include()
  typeset RetCode=0
  DECHO "include_file $*"
 
- [ ! -z "$*" ] && 
+ [ ! -z "$*" ] &&
    {
     typeset Item File
     typeset Temp="/tmp/include.$$.$RANDOM"
@@ -373,7 +364,7 @@ include()
          [ -f "${DEFSHOME}/${File}" ] && File="${DEFSHOME}/${File}"
        }
 
-       typeset frc=0 # shell bug(?) workaround "||" was ignored 
+       typeset frc=0 # shell bug(?) workaround "||" was ignored
 
        [ -f "$File" ] && frc="1"
 
@@ -381,8 +372,8 @@ include()
        {
          process_newdefs $File > $Temp
          [ $? -eq 0 ] && . $Temp 2> /dev/null
-         RetCode=$? 
-         [ -z "${NO_DEFS_RM}" ] && rm -f $Temp 
+         RetCode=$?
+         [ -z "${NO_DEFS_RM}" ] && rm -f $Temp
          [ ! -z "${NO_DEFS_RM}" ] && DECHO "not deleted temp file: $Temp"
        }
 
@@ -399,7 +390,7 @@ include()
   ############# find_includes #############
 
 #
-# Find all #include's in a C file. 
+# Find all #include's in a C file.
 #
 # WARNING: does not handle well-commented "#include"
 #
@@ -410,19 +401,20 @@ find_includes()
  typeset Item ItemDir
  typeset INFILE="$(echo $1 || xargs echo )"
  typeset ItemList=""
- 
- typeset RAW_INCLUDE_FILES=$( $AWK '
-$1 ~ /^#include/ { 
-	  	   c=substr($2,1,1);
 
-		   if (c == "\"") 
-		    {
-		      gsub (/"/,"", $2);
-		      print $2;
-		    }
-	         }
+ typeset RAW_INCLUDE_FILES=$( $AWK '
+$1 ~ /^#include/ \
+{
+ c = substr($2,1,1);
+
+ if (c == "\"")
+ {
+   gsub (/"/,"", $2);
+   print $2;
+ }
+}
 ' $INFILE
-) 
+)
 
  DECHO "Raw include files: ${RAW_INCLUDE_FILES}"
 
@@ -442,11 +434,11 @@ $1 ~ /^#include/ {
        }
    done
 
-   [ "${CkCnt}" -eq 0 ] && 
+   [ "${CkCnt}" -eq 0 ] &&
      {
        WECHO "find_includes: path not found: Source file = $INFILE Item = ${Item}: Include dirs: ${INCLUDES}"
      }
- done 
+ done
 
  echo $ItemList
 }
@@ -492,8 +484,7 @@ mk_heading ()
  typeset INCL_OPTION=""
  typeset Item
 
-cat << EOF 
-
+cat << EOF
 #
 # ${PROJECT}, ${THIS_YEAR} by ${PRJ_OWNER:-$MYSELF}, ${PRJ_EMAIL:-antonio@dellelce.com}
 #
@@ -511,7 +502,7 @@ EOF
 
 [ ! -z "${COMMON_DEP}" ] &&
   {
-cat << EOF 
+cat << EOF
 COMMON_DEP     = ${COMMON_DEP}
 EOF
   }
@@ -519,10 +510,10 @@ EOF
 
 [ "${DEBUG_MAKEFILE}" == 1 ] &&
  {
-   typeset DEBUG_STR="-DDEBUG -g" 
+   typeset DEBUG_STR="-DDEBUG -g"
  } ||
  {
-   typeset DEBUG_STR="" 
+   typeset DEBUG_STR=""
  }
 
 INCLUDES="${MODULES_INCLUDES} ${INCLUDES}"
@@ -530,22 +521,21 @@ INCLUDES="${MODULES_INCLUDES} ${INCLUDES}"
 _INCLUDES=$(eval "echo $INCLUDES")
 
 [ -z "${_INCLUDES}" ] && INCLUDES="."
- 
+
 for Item in $INCLUDES
 do
-  [ -d "${Item}" ] && 
+  [ -d "${Item}" ] &&
     {
       INCL_OPTION="${INCL_OPTION} -I${Item}"
     }
 done
 
 # prepare LIBS variable...
-
 mk_libs_var
 
 # create header
 
-cat << EOF 
+cat << EOF
 
 LOC_HFILES     = ${LOCAL_HFILES}
 HFILES         = \$(LOC_HFILES)
@@ -556,7 +546,6 @@ EOF
 
 # 1020 270312
 # CFLAGS from environment "patch".
-
 [ ! -z "${CFLAGS}" ] && CompilerFlags="${CFLAGS} ${CompilerFlags}"
 
 [ -z "${DEFINES}" ] &&
@@ -586,10 +575,10 @@ mk_subrules ()
  [ -z "${ALL_TARGETS}" ] && return 1
  DECHO "mk_subrules"
 
- typeset SingleTarget 
+ typeset SingleTarget
  echo
 
- for SingleTarget in $ALL_TARGETS 
+ for SingleTarget in $ALL_TARGETS
   do
   typeset BASE=$(basename $SingleTarget)
   typeset DIR=${SingleTarget%$BASE}
@@ -600,7 +589,7 @@ $SingleTarget:
 	@make -C $DIR $BASE
 
 EOF
-  } || 
+  } ||
   {
 cat << EOF
 $SingleTarget:
@@ -619,7 +608,7 @@ EOF
 mk_heading_rules()
 {
  DECHO "mk_heading_rules"
- 
+
 cat << EOF
 
 #
@@ -640,7 +629,7 @@ EOF
   } ||
   {
 cat << EOF
-all: $(get_custom_rules_targets) \$(TARGET) 
+all: $(get_custom_rules_targets) \$(TARGET)
 
 \$(TARGET): \$(OFILES)
 	\$(AR) rv \$(TARGET) \$(OFILES)
@@ -701,7 +690,7 @@ mk_body()
  typeset IN OBJ_PREFIX OBJ_FILE
  typeset Item
 
-[ -d "${OBJ_DIR}" ] && 
+[ -d "${OBJ_DIR}" ] &&
   {
     OBJ_DIR="${OBJ_DIR}"
   } ||
@@ -762,22 +751,22 @@ done
 mk_clean ()
 {
 cat << EOF
- 
-#  
+
+#
 # clean
-#    
-     
+#
+
 clean:
 	rm -f \$(TARGET) \$(OFILES) \$(LOC_HFILES) *.exe
 EOF
 
 typeset SubProject
 
-[ ! -z "${SUBPROJECTS}" ] && 
+[ ! -z "${SUBPROJECTS}" ] &&
 for SubProject in $SUBPROJECTS
 do
 cat << EOF
-	@make -C ${SubProject} clean 
+	@make -C ${SubProject} clean
 EOF
 done
 typeset CustomTargets=$(get_custom_rules_targets)
@@ -819,27 +808,27 @@ remove_makefiles ()
   typeset SingleProject
 
   [ -f ${PWD}/Makefile ] &&
-    { 
+    {
       echo "Deleting... ${PWD}/Makefile"
       rm -f ${PWD}/Makefile
     }
-     
+
   [ ! -z "${SUBPROJECTS}" ] && for SingleProject in $SUBPROJECTS
     do
       [ -f "${PWD}/${IN}/Makefile" ] &&
-        { 
+        {
           echo "Deleting... ${PWD}/$IN/Makefile"
         }
    done
 }
 
 get_target ()
-{ 
+{
  typeset Target="${1}"
  typeset DIR="${Target%project.defs}"
  typeset ArgBase="${Target#${DIR}}"
 
- [ -z "$1" ] && 
+ [ -z "$1" ] &&
    {
      DECHO "get_target: empty arguments"
      return 1
@@ -852,9 +841,9 @@ get_target ()
  [ ! -f "${Arg}" ]
    {
      [ -f "${DIR}/defs/${ArgBase}" ] && Arg="${DIR}/defs/${ArgBase}"
-   } 
+   }
 
- [ ! -f "${Arg}" ] && 
+ [ ! -f "${Arg}" ] &&
    {
      DECHO "get_target: not a file: ${Arg}"
      return 2
@@ -869,7 +858,7 @@ get_target ()
 # unset DEBUG
 
  cd ${DIR}
- process_newdefs "${Arg}" > ${TargetDefs} 
+ process_newdefs "${Arg}" > ${TargetDefs}
 
  [ $? -eq 0 ] &&
    {
@@ -894,7 +883,7 @@ perform_sanity_checks()
 # Minimal sanity checks
 #
 
- [ -z "${TARGET}" ] && 
+ [ -z "${TARGET}" ] &&
    {
      echo "Target is null, you might have an invalid project file"
      exit 1
@@ -909,7 +898,7 @@ perform_sanity_checks()
 #
 
 
-########### -- Environment -- ########### 
+########### -- Environment -- ###########
 
  setup_sighandler
 
@@ -917,9 +906,9 @@ perform_sanity_checks()
  MK_DEST="${TMP}/Makefile.$$.$RANDOM"
  MK_SRC="Makefile"
  PROJECT_FILE="$PWD/project.defs"
- 
+
  [ ! -f "${PROJECT_FILE}" ] && PROJECT_FILE="$PWD/defs/project.defs"
- 
+
  PROJECT_TEMP="${TMP}/project.defs.$$.$RANDOM"
  PLATFORM_FILE="$PWD/$(uname -o 2> /dev/null).defs"
  [ -z "$PROJECT" ] && PROJECT="project"
@@ -932,7 +921,7 @@ perform_sanity_checks()
 #
 
  DECHO "Loading Main project file"
- 
+
  [ -f "$PROJECT_FILE" ] &&
  {
   process_newdefs $PROJECT_FILE > ${PROJECT_TEMP}
@@ -940,19 +929,19 @@ perform_sanity_checks()
   rm -f ${PROJECT_TEMP}
  } ||
  {
-  echo 
+  echo
   echo "project.defs was not found... using internal defaults"
-  echo 
- 
+  echo
+
   [ -d "./src" ] && SRC_DIR=./src
   [ -d "./obj" ] && OBJ_DIR=./obj
- 
+
   dn="$(basename $(dirname $PWD))"
- 
+
   PROJECT="$dn"
-  [ -z "$ForcedTarget" ] && { TARGET="$dn"; } || { TARGET="$ForcedTarget"; } 
+  [ -z "$ForcedTarget" ] && { TARGET="$dn"; } || { TARGET="$ForcedTarget"; }
  }
- 
+
 #
 # Minimal sanity checks
 #
@@ -985,11 +974,11 @@ perform_sanity_checks()
 
 #
 #
-#  Check for particular Object and Source directories 
+#  Check for particular Object and Source directories
 #
 #
 
- [ -d "${OBJ_DIR}" ] && 
+ [ -d "${OBJ_DIR}" ] &&
  {
   OBJ_DIR="${OBJ_DIR}/"
  } ||
@@ -997,8 +986,8 @@ perform_sanity_checks()
   # Make sure there is no trash in that variable.
   OBJ_DIR=""
  }
- 
- [ -d "${SRC_DIR}" ] && 
+
+ [ -d "${SRC_DIR}" ] &&
  {
   SRC_DIR="${SRC_DIR}/"
  } ||
@@ -1039,7 +1028,7 @@ CFILES=$(echo $CFILES)
 unset IN
 
 #
-#  Start creating makefile.... 
+#  Start creating makefile....
 #
 
  [ ! "$FLAG_SILENT" = 1 ] &&
@@ -1092,7 +1081,7 @@ unset IN
      echo
      echo "Sub-project: $IN"
      cd $PWD/$IN
-#    [ -z "${DEFSDIR}" ] && 
+#    [ -z "${DEFSDIR}" ] &&
 #    {
 #     DECHO "Running $THISSCRIPT -C -q ${ARGS}"
 #     $THISSCRIPT -C -q ${ARGS}
@@ -1169,7 +1158,7 @@ unset IN
 
    echo
    echo "Makefile updated:"
-   [ -f "${MK_SRC}" ] && 
+   [ -f "${MK_SRC}" ] &&
    {
      ls -lt ${MK_SRC}
    }
