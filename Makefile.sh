@@ -30,18 +30,6 @@
  export XECHO_PROG="cecho.sh"
  export MYSELF="Antonio Dell'elce"
 
-# SunOS kludge (Standard 'awk' for SunOS is TOO OLD!)
-# TODO: this was actually for (now) "legacy" version of Solaris
-
- [ $(uname) != "SunOS" ] &&
-   {
-     export AWK="awk"
-   } ||
-   {
-     export AWK="/usr/xpg4/bin/awk"
-     [ ! -x "$AWK" ] && AWK="awk" # fallback to hell 2308 040910
-   }
-
 # Clear possible trash (from previous executions - Makefile.sh can call itself)
 
  CHILD_RUN=0
