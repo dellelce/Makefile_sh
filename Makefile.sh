@@ -22,10 +22,9 @@
   exit 1
  }
 
- # 1607 190812 added MYPATH
+ # 190812 added MYPATH
  export MYPATH="$(dirname $(readlink  -f "$0"))"
  export THISSCRIPT="$MYPATH/Makefile.sh"
- export RUNLOG="$HOME/.lmk"
  export ARGS="$*"
  export XECHO_PROG="cecho.sh"
  export MYSELF="Antonio Dell'elce"
@@ -58,17 +57,12 @@
 CompilerName="gcc"
 [ -z "${CompilerFlags}" ] && CompilerFlags="-Wall -O2"
 
-############# execution log #############
-
- # 1606 190812 test if RUNLOG actually exists before writing log entry (should use a flag?)
- [ -f "$RUNLOG" ] && echo "$(pwd),$(date), $ARGS" >> $RUNLOG
-
- ############# locate color echo version #############
 
 ### FUNCTIONS ###
 
  unset XECHO
 
+# locate color echo version 
 find_xecho()
 {
  typeset Item
@@ -113,7 +107,7 @@ EOF
 
 }
 
-  ############# DECHO #############
+############# DECHO #############
 
 #
 # Debug echo function
@@ -130,7 +124,7 @@ WECHO()
  eval "echo ${ESC}[1mWARNING${ESC}[0m $(date +%H%M): \"$*\"   1>&$DEBUG_FD";
 }
 
-  ############# process_newdefs #############
+############# process_newdefs #############
 
 # Convert new .defs format to a shell script.
 #
@@ -152,7 +146,7 @@ process_newdefs()
    return 1
  }
 
-#  1529 190812 moved awk code to an external file
+#  190812 moved awk code to an external file
  DECHO "process_newdefs: Running awk for: $NewDefsFile"
  $AWK -f "$MYPATH/process_newdefs.awk" "$NewDefsFile"
 }
@@ -281,10 +275,10 @@ setup_sighandler()
   {
     usage; exit 0
   }
+
 #
 # This should be used only internally
 #
-
   [ "$1" = "-C" ] &&
   {
     export CHILD_RUN=1; shift; continue
@@ -301,15 +295,15 @@ setup_sighandler()
   ############# Start-up banner #############
 
   [ "${CHILD_RUN}" -eq 0 -a -z "${FLAG_SILENT}" ] &&
-    {
+  {
 cat << EOF
 #
 # Makefile.sh starting at... $(date)
 #
 EOF
-    }
+  }
 
-  ############# include #############
+############# include #############
 
 #
 # To be used in projects..
@@ -319,63 +313,62 @@ include()
  typeset RetCode=0
  DECHO "include_file $*"
 
- [ ! -z "$*" ] &&
-   {
-    typeset Item File
-    typeset Temp="/tmp/include.$$.$RANDOM"
+ [ -z "$*" ] && return 0
 
-    for File in $*
-    do
-      [ "${File}" = "${File%.defs}" ] &&
-      {
-        File="${File}.defs"
-      }
+ typeset Item File
+ typeset Temp="/tmp/include.$$.$RANDOM"
 
-       [ ! -z "${DEFSDIR}" -a -d "${DEFSDIR}" ] &&
-       {
-         [ -f "${DEFSDIR}/${File}" ] && File="${DEFSDIR}/${File}"
-       }
+ for File in $*
+ do
+  [ "${File}" = "${File%.defs}" ] &&
+  {
+    File="${File}.defs"
+  }
 
-       [ -d "defs" ] &&
-       {
-         [ -z "${DEFSDIR}" ] && DEFSDIR="$PWD/defs"
-         [ -f "defs/${File}" ] && File="defs/${File}"
-       }
+  [ ! -z "${DEFSDIR}" -a -d "${DEFSDIR}" ] &&
+  {
+    [ -f "${DEFSDIR}/${File}" ] && File="${DEFSDIR}/${File}"
+  }
 
-       [ ! -f "${File}" ] &&
-       {
-         [ -f "${DEFSHOME}/defs/${File}" ] && File="${DEFSHOME}/defs/${File}"
-       }
+  [ -d "defs" ] &&
+  {
+    [ -z "${DEFSDIR}" ] && DEFSDIR="$PWD/defs"
+    [ -f "defs/${File}" ] && File="defs/${File}"
+  }
 
-       [ ! -f "${File}" ] &&
-       {
-         [ -f "${DEFSHOME}/${File}" ] && File="${DEFSHOME}/${File}"
-       }
+  [ ! -f "${File}" ] &&
+  {
+    [ -f "${DEFSHOME}/defs/${File}" ] && File="${DEFSHOME}/defs/${File}"
+  }
 
-       typeset frc=0 # shell bug(?) workaround "||" was ignored
+  [ ! -f "${File}" ] &&
+  {
+    [ -f "${DEFSHOME}/${File}" ] && File="${DEFSHOME}/${File}"
+  }
 
-       [ -f "$File" ] && frc="1"
+  typeset frc=0 # shell bug(?) workaround "||" was ignored
 
-       [ "$frc" -eq 1 ] &&
-       {
-         process_newdefs $File > $Temp
-         [ $? -eq 0 ] && . $Temp 2> /dev/null
-         RetCode=$?
-         [ -z "${NO_DEFS_RM}" ] && rm -f $Temp
-         [ ! -z "${NO_DEFS_RM}" ] && DECHO "not deleted temp file: $Temp"
-       }
+  [ -f "$File" ] && frc="1"
 
-       [ "$frc" -eq 0 ] &&
-       {
-         echo "include: \"$File\" is not a file. Skipped."; RetCode=1; break
-       }
-     done
-   }
+  [ "$frc" -eq 1 ] &&
+  {
+    process_newdefs $File > $Temp
+    [ $? -eq 0 ] && . $Temp 2> /dev/null
+    RetCode=$?
+    [ -z "${NO_DEFS_RM}" ] && rm -f $Temp
+    [ ! -z "${NO_DEFS_RM}" ] && DECHO "not deleted temp file: $Temp"
+  }
+
+  [ "$frc" -eq 0 ] &&
+  {
+    echo "include: \"$File\" is not a file. Skipped."; RetCode=1; break
+  }
+ done
 
  return "${RetCode}"
 }
 
-  ############# find_includes #############
+############# find_includes #############
 
 #
 # Find all #include's in a C file.
@@ -405,7 +398,6 @@ $1 ~ /^#include/ \
 )
 
  DECHO "Raw include files: ${RAW_INCLUDE_FILES}"
-
  for Item in ${RAW_INCLUDE_FILES}
  do
    DECHO "find_includes: header: ${Item}"
@@ -413,25 +405,25 @@ $1 ~ /^#include/ \
 
    for ItemDir in ${INCLUDES}
    do
-     [ -f "${ItemDir}/${Item}" ] &&
-       {
-         DECHO "find_includes: path: ${ItemDir}/${Item}"
-         ItemList="${ItemList} ${ItemDir}/${Item}"
-         CkCnt=1
-         break
-       }
+    [ -f "${ItemDir}/${Item}" ] &&
+    {
+      DECHO "find_includes: path: ${ItemDir}/${Item}"
+      ItemList="${ItemList} ${ItemDir}/${Item}"
+      CkCnt=1
+      break
+    }
    done
 
    [ "${CkCnt}" -eq 0 ] &&
-     {
-       WECHO "find_includes: path not found: Source file = $INFILE Item = ${Item}: Include dirs: ${INCLUDES}"
-     }
+    {
+      WECHO "find_includes: path not found: Source file = $INFILE Item = ${Item}: Include dirs: ${INCLUDES}"
+    }
  done
 
  echo $ItemList
 }
 
-  ############# mk_libs_var #############
+############# mk_libs_var #############
 
 mk_libs_var()
 {
@@ -455,13 +447,12 @@ mk_libs_var()
  {
   for LibItem in ${MODULES_LIBS}
   do
-    LIBS="${LIBS} -l${LibItem}"
+   LIBS="${LIBS} -l${LibItem}"
   done
  }
-
 }
-  ############# mk_heading #############
 
+############# mk_heading #############
 #
 # Builds a makefile "heading"
 mk_heading ()
@@ -494,7 +485,6 @@ cat << EOF
 COMMON_DEP     = ${COMMON_DEP}
 EOF
   }
-
 
 [ "${DEBUG_MAKEFILE}" == 1 ] &&
  {
@@ -532,7 +522,7 @@ INCLUDES       = ${INCL_OPTION}
 DEBUG          = ${DEBUG_STR}
 EOF
 
-# 1020 270312
+# 270312
 # CFLAGS from environment "patch".
 [ ! -z "${CFLAGS}" ] && CompilerFlags="${CFLAGS} ${CompilerFlags}"
 
@@ -553,11 +543,10 @@ LIBS           = ${LIBS}
 
 EOF
 
- #### End of mk_heading ####
+#### End of mk_heading ####
 }
 
-  ############# mk_subrules #############
-
+############# mk_subrules #############
 mk_subrules ()
 {
  [ -z "${ALL_TARGETS}" ] && return 1
@@ -592,7 +581,6 @@ EOF
 }
 
 ############# mk_heading_rules #############
-
 mk_heading_rules()
 {
  DECHO "mk_heading_rules"
@@ -626,7 +614,6 @@ EOF
 }
 
 ############# get_custom_rules_targets #############
-
 get_custom_rules_targets ()
 {
  DECHO "get_custom_rules_targets"
@@ -646,7 +633,6 @@ get_custom_rules_targets ()
 }
 
 ############# mk_custom_rules #############
-
 mk_custom_rules ()
 {
   DECHO "mk_custom_rules"
@@ -669,8 +655,7 @@ mk_custom_rules ()
  done
 }
 
-  ############# mk_body #############
-
+############# mk_body #############
 mk_body()
 {
  DECHO "mk_body"
@@ -735,7 +720,6 @@ done
 }
 
 ############# mk_clean #############
-
 mk_clean ()
 {
 cat << EOF
@@ -768,10 +752,7 @@ EOF
 
 }
 
-
 ############# mk_tail #############
-
-
 mk_tail ()
 {
 cat << EOF
@@ -788,7 +769,6 @@ EOF
 #
 # Remove all Makefiles if Requested
 #
-
 remove_makefiles ()
 {
   DECHO "remove_makefiles"
@@ -878,15 +858,7 @@ perform_sanity_checks()
    }
 }
 
-
-#
-##
-### 	MAIN
-##
-#
-
-
-########### -- Environment -- ###########
+### MAIN ###
 
  setup_sighandler
 
@@ -903,11 +875,8 @@ perform_sanity_checks()
  TARGET="target"
 
 #
-#
 #  Load project file
 #
-#
-
  DECHO "Loading Main project file"
 
  [ -f "$PROJECT_FILE" ] &&
@@ -933,24 +902,18 @@ perform_sanity_checks()
 #
 # Minimal sanity checks
 #
-
  perform_sanity_checks
 
 #
-#
 #  Load platform file
 #
-#
-
  [ -f "$PLATFORM_FILE" ] &&
  {
   . $PLATFORM_FILE
  }
 
 #
-#
 #  Load optional files
-#
 #
  [ ! -z "$LOAD_FILES" ] &&
  {
@@ -961,11 +924,8 @@ perform_sanity_checks()
  }
 
 #
-#
 #  Check for particular Object and Source directories
 #
-#
-
  [ -d "${OBJ_DIR}" ] &&
  {
   OBJ_DIR="${OBJ_DIR}/"
@@ -988,37 +948,29 @@ perform_sanity_checks()
 #  Builds list of .c files and related Object files (.o)
 #
 
-#OTHER_CFILES="${CFILES}"
-
 CFILES="${SRC_DIR}*.c ${CFILES}"
-
 OFILES=$(
- for IN in $CFILES
+ for item in $CFILES
   do
-    CFILE=$(basename $IN)
+    CFILE=$(basename $item)
     echo ${OBJ_DIR}${CFILE%.c}.o
-#    unset CFILE
   done
 )
-unset CFILE IN
+unset CFILE item
 OFILES=$(echo $OFILES)
 CFILES=$(
- for IN in $CFILES
+ for item in $CFILES
   do
-    echo $IN
+    echo $item
   done
 )
-unset CFILE IN
+unset CFILE item
 
 CFILES=$(echo $CFILES)
-#CFILES="${CFILES} ${OTHER_CFILES}"
-
-unset IN
 
 #
 #  Start creating makefile....
 #
-
  [ ! "$FLAG_SILENT" = 1 ] &&
  {
   echo "$THISSCRIPT running in $PWD..."
@@ -1027,7 +979,6 @@ unset IN
 #
 # Remove all files...
 #
-
  DECHO "Checking if needed to remove current makefiles"
 
  [ "${CHILD_RUN}" -eq 0 -a "${REMOVE_ALL}" = "1" ] &&
@@ -1041,7 +992,6 @@ unset IN
 #
 # Retrieve Sub-project name
 #
-
  unset ALL_TARGETS
 
  DECHO "Verifying if we need to load subprojects"
@@ -1110,11 +1060,8 @@ unset IN
  }
 
 #
-#
 # Creates new Makefile
 #
-#
-
  DECHO "Creating Makefile"
 
 (
@@ -1161,7 +1108,6 @@ unset IN
 #
 # Runs Post exec scripts
 #
-
  DECHO "Verifying if we need to run any post execution script."
 
  [ -x "$POST_EXEC" ] &&
@@ -1176,14 +1122,12 @@ unset IN
   }
  }
 
-######## -- Clean up -- ########
-
+# Cleanup
  rm -f $MK_DEST
 
 #
 # Verify if we have been asked to run "make redo"
 #
-
  DECHO "Verifying if we have been asked to run \"make redo\""
 
  [ "${CHILD_RUN}" -ne 1 -a "${RUN_MAKE_REDO}" -eq 1 ] &&
