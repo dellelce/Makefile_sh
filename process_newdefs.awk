@@ -27,7 +27,6 @@ BEGIN \
 }
 
 # Ignore comments...
-
 $1 ~ /^#/ { print $0; next; }
 
 State==0 && /=/ && $0 ~ /^RULE_/ \
@@ -61,16 +60,13 @@ State==0 && $1 ~ /^include/ \
 
 #match "force_include_all"
 # only two args supported
-
 State==0 && $1 ~ /^force_include_all/ \
 {
  IncludeAllCnt = IncludeAllCnt + 1;
  IncludeAllArray[IncludeAllCnt] = $2; 
 }
 
-
 #match "rule" keyword
-
 State==0 && $1 ~ /^rule/ \
 {
  print "";
